@@ -1,0 +1,40 @@
+service: sls-file-upload
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: "arn:aws:s3:::tyc00n-sls-upload/*"
+
+
+functions:
+  fileUpload:
+    handler: handler.upload
+    events:
+      - http:
+          path: upload
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: tyc00n-sls-upload
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+          - AllowedMethods:
+            - GET
+            - PUT
+            - POST
+            - HEAD
+            AllowedOrigins:
+            - "*"
+            AllowedHeaders:
+            - "*"
